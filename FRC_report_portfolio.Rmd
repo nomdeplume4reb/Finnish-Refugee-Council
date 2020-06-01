@@ -1,0 +1,1468 @@
+---
+title: "FRC Report"
+author: "Rachel Bryant"
+date: "13/5/2020"
+output:
+  html_document: default
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Load libraries 
+library(readxl)
+library(writexl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
+library(knitr)
+library(gridExtra)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Load data 
+data <- read_excel("survey_final.xlsx")
+data <- data %>% select(-1,-2,-77)
+
+#rename columns
+clean_data <- data %>% rename(
+      behavior = 1,
+      why_help_in_need = 2,	
+      why_cause = 3,
+      why_personally_know = 4,
+      why_religion = 5,
+      why_friend = 6,
+      why_events = 7,
+      why_help_with_less = 8,
+      why_not = 9,
+      why_not_open = 10,
+      familiarity = 11,
+      adult_lit = 12,
+      livelihood = 13,
+      gender_equ = 14,
+      education = 15,
+      guidance = 16,
+      integration = 17,
+      advocacy = 18,
+      empathy = 19,
+      act_culture = 20,
+      act_sports = 21,
+      act_crafts = 22,
+      act_student_union = 23,
+      act_none = 24,
+      act_other = 25,
+      act_open = 26,
+      how_involved = 27,
+      publicity_flyers = 28,
+      publicity_tv = 29,
+      publicity_staff = 30,
+      publicity_socmed = 31,
+      publicity_email = 32,
+      publicity_newsletter = 33,
+      publicity_wom = 34,
+      publicity_other = 35,
+      events_concerts = 37,
+      events_lecture = 38,
+      events_contest = 39,
+      events_influence = 40,
+      events_assoc = 41,
+      events_lunch = 42,
+      events_class = 43,
+      events_game = 44,
+      events_movie = 45,
+      events_gala = 46,
+      events_none = 47,
+      events_other = 48,
+      motivation_finance = 50,
+      motivation_event = 51,
+      motivation_prize = 52,
+      motivation_info = 53,
+      motivation_media = 54,
+      motivation_know_beneficiary = 55,
+      motivation_know_asker = 56,
+      motivation_matched = 57,
+      motivation_nothing = 58,
+      motivation_other = 59,
+      motivation_open = 60,
+      gender = 61,
+      age = 63,
+      employment = 64,
+      income = 65,
+      degree = 66,
+      school = 68,
+      school_open = 69,
+      study_field = 70,
+      study_field_open = 71,
+      perm_resident = 72,
+      nationality = 73,
+      nationality_open = 74,
+      newsletter = 75
+      )
+
+#factorize columns
+for(i in names(clean_data[,1:75])){
+  clean_data[[i]] <- factor(clean_data[[i]], ordered=FALSE)
+}
+
+#format responses
+clean_data <- data.frame(lapply(clean_data, function(x) {
+                  gsub("Other, ...", "Other", x)
+              }))
+
+clean_data <- data.frame(lapply(clean_data, function(x) {
+                  gsub("Finnish Refugee Council student association", "FRC student club", x)
+              }))
+
+clean_data <- data.frame(lapply(clean_data, function(x) {
+                  gsub("\\(+volunteering, donation of goods, sales etc.+\\)", "", x)
+              }))
+
+#theme
+theme_180dc <- theme_classic() +
+  theme(legend.title = element_blank(),
+        text = element_text(colour = "#4b5050"),
+        plot.title = element_text(size = 12, hjust = 0.5, colour = "#4b5050"),
+        axis.ticks = element_line(color = "#4b5050"),
+        axis.line = element_line(color = "#4b5050"))
+
+colors_180dc2 <- c("#4b5050", "#54b441", "#6e7378", "#aaafb4", "#c9ccce", "#55b541", "#4c5050", "#56b441", "#6f7378", "#abafb4", "#c8ccce", "#57b541")
+
+
+```
+
+
+
+## Summary
+
+In collaboration with 180 Degrees Consulting Helsinki, I worked with a team of four to come up with a strategy for the Finnish Refugee Council (FRC) for enlarging their student donor base. The first stage of the project entailed writing and conducting a survey of local students on their attitudes towards donating to NGOs and their familiarity and favorability of FRC. The survey was open between 27.03.2020 and 21.04.2020 and was targeted and distributed (nonrandomly) to students of Finnish universities. Respondents were entered into a lottery for a 50 EUR gift card to K-Group supermarkets.
+
+### What are the demographics of respondents?
+
+We received 233 responses. The majority of respondents (70%) were female. The age groups of respondents skewed older, with most between 21 and 25 years of age. 
+
+Note: the color scheme of graphs was selected by 180 Degrees Consulting.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.hold='hold', out.width="50%"}
+
+clean_data %>% group_by(gender) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=gender, y=Prop * 100, fill=gender)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  ylab("% of Respondents") +
+  xlab("Gender") +
+  ggtitle("What is your gender?") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3)
+
+clean_data %>% group_by(age) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=age, y=Prop * 100, fill=age)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  ylab("% of Respondents")+
+  xlab("Age Group") +
+  ggtitle("Which category includes your age?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3)
+
+```
+
+
+### Institutes of Education
+
+Most repondents were from the University of Helsinki or Hanken School of Economics (21% each). The biggest schools in the "other" category include the University of Eastern Finland and various schools of applied sciences.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+clean_data <- clean_data %>%
+  mutate(school = case_when(
+    school_open == "University of Tampere" ~ "Tampere University",
+    school_open == "Tampere University" ~ "Tampere University",
+    school_open == "Tampere" ~ "Tampere University",
+    school == "Hanken School of Economics" ~ "Hanken School of Economics",
+    school == "University of Helsinki" ~ "University of Helsinki",
+    school == "Aalto University" ~ "Aalto University",
+    school == "Åbo Akademi University" ~ "Åbo Akademi University",
+    school == "University of Turku" ~ "University of Turku",
+    school == "Other" ~ "Other"
+  ))
+  
+school <- clean_data %>% group_by(school) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup()
+
+ggplot(school, aes(x=reorder(school, Prop), y=Prop * 100, fill=school)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  ylab("% of Respondents") +
+  xlab("School") +
+  ggtitle("What is your university or \n institute of higher education?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 1)
+
+
+```
+
+
+\pagebreak
+
+### Degree Programs and Field of Study
+
+Most respondents were graduate students (53%) or undergraduate students (39%). The most popular fields of study were Business, Economics and Administration (30%), followed by Social Sciences (23%) and Humanities, Art and Design (21%).
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+clean_data %>% group_by(degree) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=reorder(degree, Prop), y=Prop * 100, fill=degree)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  xlab("Degree") +
+  ggtitle("What is your degree program?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3)
+
+
+clean_data %>% group_by(study_field) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=reorder(study_field, Prop), y=Prop * 100, fill=study_field)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  xlab("Field of Study") +
+  ggtitle("What is your field of study?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 2)
+```
+
+
+
+### Employment and income
+
+Most of the respondents were not employed (55%) and few work full-time hours. A large share of students still think they have enough disposable income, although some students expressed that they were financially constrained.
+
+
+```{r echo=FALSE, fig.hold='hold', message=FALSE, warning=FALSE, out.width="50%"}
+
+clean_data %>% group_by(employment) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=employment, y=Prop * 100, fill=employment)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  xlab("Employment Status") +
+  ggtitle("Which best describes your employment status?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3)
+
+clean_data %>% group_by(income) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=income, y=Prop * 100, fill=income)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  ggtitle("Was your disposable income sufficient for your \n needs during the last semester?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3) +
+  theme(axis.title.x = element_blank())
+
+ #grid.arrange(employment, income) 
+```
+
+
+ 
+### Nationality
+
+
+Three quarters of respondents were Finnish nationals. The second largest group was Vietnamese, making up 5% of respondents. Approximately 91% of respondents permanently live in Finland.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.hold='hold', out.width="50%"}
+clean_data %>% group_by(nationality) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=nationality, y=Prop * 100, fill=nationality)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  ylab("% of Respondents") +
+  xlab("Nationality") +
+  ggtitle("What is your nationality?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3)
+
+clean_data %>% group_by(perm_resident) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=perm_resident, y=Prop * 100, fill=perm_resident)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  ylab("% of Respondents") +
+  ggtitle("Are you permanently living in Finland?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3) +
+  theme(axis.title.x = element_blank())
+
+#grid.arrange(nationality, perm_res)
+
+```
+
+
+\pagebreak
+
+
+
+### Donor Behavior
+
+### How often do students donate money to NGOs?
+
+19% of respondents said that they regularly donate to one or more nonprofit organizations and 34% said that they occasionally donate to nonprofit organizations. The remaining 46% of the students do not usually donate money. However, 21% of respondents said that they participate in other ways even though they usually do not donate financially.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+clean_data %>% group_by(behavior) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=stringr::str_wrap(behavior, 40), y=Prop * 100, fill=behavior)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  ggtitle("Which of the following best describes \n your attitude towards donating?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 2) +
+  theme(axis.title.y = element_blank())
+
+```
+
+
+
+### Why do students donate money?
+
+Of those respondents who regularly or occasionally donate money, most listed belief in the cause as well as helping those in need (or "with less") as a very important reason for donating. Least important seems to be access to events and religion.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+why_donate <- clean_data %>% 
+  gather("reason", "importance", why_help_in_need:why_help_with_less) %>%
+  filter(!is.na(importance)) %>%
+  mutate(reason = case_when(
+    reason == "why_help_in_need" ~ 'I want to help people in need',
+    reason == "why_cause" ~ 'I want to help a cause I believe in',
+    reason == "why_personally_know" ~ 'I know someone affected by the cause',
+    reason == "why_religion" ~ "It's a part of my religion",
+    reason == "why_friend" ~ 'Friend or family asked',
+    reason == "why_events" ~  'I want to attend events',
+    reason == "why_help_with_less" ~ 'Those with more should help those with less',
+  ))
+
+why_donate %>% group_by(reason, importance) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=importance, y=prop * 100, fill=importance)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~reason, labeller = label_wrap_gen(30, multi_line = TRUE)) +
+  coord_flip()+
+  ylab("% of Respondents Who Regularly or Occasionally Donate Money") +
+  ggtitle("Why do you donate? Rate the importance of the following factors")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 8) +
+  theme(axis.title.y = element_blank())
+
+```
+
+
+\pagebreak
+
+### Why don't students donate money?
+
+Most non-donors list financial constraints as their primary reason for not donating. However, a couple students mentioned in the comments that they do not donate because they volunteer, suggesting that some students may view volunteering as a substitute for financial contributions.
+
+The second most common reason for not donating is a lack of trust of the fundraising organization (15%).
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+clean_data %>% filter(!is.na(why_not)) %>%
+  group_by(why_not) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=stringr::str_wrap(why_not, 30), y=prop * 100, fill=why_not)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Non-Donors") +
+  ggtitle("Why don't you donate?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 3) +
+  theme(axis.title.y = element_blank())
+
+```
+
+
+\pagebreak
+
+### Familiarity with FRC
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+clean_data %>% group_by(familiarity) %>%
+  summarise(Freq=n()) %>%
+  mutate(n = sum(Freq), Prop = Freq/n) %>%
+  ungroup() %>%
+  ggplot(aes(x=stringr::str_wrap(familiarity, 40), y=Prop * 100, fill=familiarity)) +
+  geom_col(position = "dodge") +
+  coord_flip()+
+  ylab("% of Respondents") +
+  ggtitle("How familiar are you with the Finnish Refugee Council?")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(Prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 2) +
+  theme(axis.title.y = element_blank())
+
+```
+
+
+### Attitudes towards FRC
+
+Students were asked "How favorably or unfavorably would you rate the following activities OUTSIDE of Finland of the Finnish Refugee Council?  
+
+1. Adult literacy, local language and everyday coping skills for refugees"
+2. Livelihood, business and financial literacy training
+3. Gender equality and eradicating gender-based violence
+4. Educating refugees on adapting to the effects of climate change
+
+How favorably or unfavorably would you rate the following activities of the Finnish Refugee Council INSIDE Finland?
+
+1. Individual guidance and advice for vulnerable refugees, asylum seekers and immigrants
+2. Developing and promoting best practices for successful integration of refugees and immigrants
+3. Political and social advocacy
+4. Promoting empathy and positive attitudes towards refugees
+
+Respondents rated each activity as very favorable, mostly favorable, don't know, mostly unfavorable or very unfavorable. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.hold='hold', out.width="50%"}
+
+# Favorability with specific FRC activities outside of Finland
+fav_activities_out <- clean_data %>%
+  gather(activity, favorability, adult_lit:education) %>%
+  mutate(favorability = factor(favorability, order = TRUE, levels = c("Very unfavorable", "Mostly unfavorable", "Don’t know", "Mostly favorable", "Very favorable"))) %>%
+  group_by(activity, favorability) %>%
+  count(favorability) %>%
+  ungroup() %>%
+  group_by(activity) %>%
+  mutate(perc=100*n/sum(n))
+
+# Average favourability outside of Finland
+fav_activities_out_avg <- fav_activities_out %>%
+  group_by(favorability) %>%
+  summarize(avg = sum(n)/4) %>%
+  ungroup() %>%
+  mutate(perc=100*avg/sum(avg))
+
+# Favourability of specific activites inside of Finland
+fav_activities_in <- clean_data %>%
+  gather(activity, favorability, guidance:empathy) %>%
+  mutate(favorability = factor(favorability, order = TRUE, levels = c("Very unfavorable", "Mostly unfavorable", "Don’t know", "Mostly favorable", "Very favorable"))) %>%
+  group_by(activity, favorability) %>%
+  count(favorability) %>%
+  ungroup() %>%
+  group_by(activity) %>%
+  mutate(perc=100*n/sum(n))
+  
+# Average favourability inside of Finland
+fav_activities_in_avg <- fav_activities_in %>%
+  group_by(favorability) %>%
+  summarize(avg = sum(n)/4) %>%
+  ungroup() %>%
+  mutate(perc=100*avg/sum(avg))
+
+
+```
+
+Respondents generally see FRC activities as mostly or very favorable. Very few rated any activity as mostly or very unfavorable. We found no evidence for students preferring the activities inside or outside of Finland. That is the average favorability of the activities inside and outside of Finland were about the same. Overall students thought gender equality and literacy were the most favorable activities outside of Finland. For the activities inside of Finland a few more people were unsure about how favorable political and social advocacy is compared to other activities. 
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+## Average favorability of activities outside of Finland
+ggplot(fav_activities_out_avg, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  ggtitle("What FRC activities do students support?", subtitle="Average favorability of FRC activities outside of Finland") +
+  ylab("% of Respondents") +
+  theme_180dc +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust = -.05) +
+  theme(axis.title.y = element_blank())
+
+## Average favorability of activities inside of Finland
+
+ggplot(fav_activities_in_avg, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  ggtitle("What FRC-activities do students support?", subtitle="Average favorability of FRC activities inside of Finland") +
+  ylab("% of Respondents") +
+  theme_180dc +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust=-.05) +
+  theme(axis.title.y = element_blank())
+
+# Specific activities
+ggplot(fav_activities_out, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  facet_wrap(~activity, ncol=2, shrink=TRUE, switch="x") +
+  ggtitle("What FRC-activities do students support?", subtitle="Favorability of specific FRC activities outside of Finland") +
+  ylab("% of Respondents") +
+  theme_180dc +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust = -.05) +
+  theme(axis.title.y = element_blank())
+
+# Specific activities
+ggplot(fav_activities_in, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  facet_wrap(~activity, ncol=2, shrink=TRUE, switch="x") +
+  ggtitle("What FRC-activities do students support?", subtitle="Favorability of specific FRC activities inside of Finland") +
+  theme_180dc +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust = -.05) +
+  theme(axis.title.y = element_blank())
+
+```
+
+### Gender and favorability of FRC activities
+
+Male respondents seem to be somewhat more sceptical towards FRC activities. The gender difference was especially large when it comes to political and social advocacy. 68 % of women found social and political advocacy very or mostly favorable, compared to 50 % of men.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Favorability by gender - Outside
+fav_activities_in_gender <- clean_data %>%
+  filter(gender == "Male" | gender == "Female") %>%
+  droplevels() %>%
+  group_by(gender) %>%
+  gather(activity, favorability, adult_lit:education) %>%
+  mutate(favorability = factor(favorability, order = TRUE, levels = c("Very unfavorable", "Mostly unfavorable", "Don’t know", "Mostly favorable", "Very favorable"))) %>%
+  group_by(gender, activity, favorability) %>%
+  count(favorability) %>%
+  ungroup() %>%
+  group_by(gender, activity) %>%
+  mutate(perc=100*n/sum(n))
+
+#Inside 
+fav_activities_out_gender <- clean_data %>%
+  filter(gender == "Male" | gender == "Female") %>%
+  droplevels() %>%
+  group_by(gender) %>%
+  gather(activity, favorability, guidance:empathy) %>%
+  mutate(favorability = factor(favorability, order = TRUE, levels = c("Very unfavorable", "Mostly unfavorable", "Don’t know", "Mostly favorable", "Very favorable"))) %>%
+  group_by(gender, activity, favorability) %>%
+  count(favorability) %>%
+  ungroup() %>%
+  group_by(gender, activity) %>%
+  mutate(perc=100*n/sum(n))
+
+
+ggplot(fav_activities_out_gender, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  facet_grid(gender ~ activity, shrink=TRUE) +
+  theme_180dc + 
+  ggtitle("What FRC-activities do men/women support?", subtitle="Specific acitivites outside of Finland") +
+  ylab("% of Gender") +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust = -.05) +
+  theme(axis.title.y = element_blank())
+
+
+ggplot(fav_activities_in_gender, aes(x=favorability, fill=favorability, y=perc)) + 
+  geom_bar(position="dodge", stat="identity") +
+  coord_flip()+
+  scale_fill_manual(values = colors_180dc2) +
+  facet_grid(gender ~ activity, shrink=TRUE) +
+  theme_180dc + 
+  ggtitle("What FRC-activities do men/women support?", subtitle="Specific acitivites inside of Finland") +
+  ylab("% of Gender") +
+  theme(legend.position = "none") +
+  theme(rect = element_blank()) +
+  geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", hjust = -.05) +
+  theme(axis.title.y = element_blank())
+
+
+```
+
+\pagebreak
+
+## Donor Groups
+
+We posit that regular donors are more reliable potential donors, so we divide the responses into the following donor groups:
+
+* Regular donors: regularly donate to at least one NGO
+* Occasional donors: occasionally donate to different NGOs
+* Non-donors: do not donate financially, but may contribute goods or services
+
+However, the data shows that there aren't many differences between regular donors, occasional donors, and non-donors, and almost none of the differences are statistically significant at the .05 level. This might be due to the very small sample size. The ideal sample size for the five targeted schools would have been 1,000.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+clean_data <- clean_data %>%
+  mutate(donor_group = case_when(
+    behavior == "I regularly donate money to one nonprofit organisation." ~ "Regular Donor",
+    behavior == "I regularly donate money to several different nonprofit organisations." ~ "Regular Donor",
+    behavior == "I occasionally donate money to different nonprofit organisations." ~ "Occasional Donor",
+    behavior == "I don't donate money, but I participate in another way ." ~ "Non-Donor",
+    behavior == "I don't usually participate in or support nonprofit organisations." ~ "Non-Donor"
+  )) %>%
+  mutate(donor_group = as.factor(donor_group))
+
+```
+
+
+
+### Weighting results by gender
+Since most of the survey respondents are women we attempt to weight the results by gender, assuming 53% of students in Finland are female and 47% are male (Official Statistics of Finland).
+
+Official Statistics of Finland. (n.d.). Number of students registered at university in Finland in 2019, by university. In Statista - The Statistics Portal. Retrieved May 1, 2020, from https://www.statista.com/statistics/525786/finland-number-of-university-students-by-university/.
+
+
+
+```{r echo=FALSE, fig.height=4, message=FALSE, warning=FALSE}
+library(survey)
+library(gdata)
+
+wtd_gender <- clean_data %>%
+  filter(gender == "Male" | gender == "Female") %>%
+  drop.levels(clean_data$gender) %>%
+  mutate(gndr_wt = case_when(
+    gender == "Male" ~ 1/(55/72000),
+    gender == "Female" ~ 1/(154/81000)
+  ))
+
+data_design <- svydesign(data = wtd_gender, id = ~1, 
+                         weights = ~gndr_wt)
+
+tab_g <- svytable(~gender, design = data_design)
+
+tab_g <- tab_g %>%
+  as.data.frame() %>%
+  mutate(Prop = Freq/sum(Freq))
+
+tab_gd <- svytable(~gender + donor_group, design = data_design)
+
+tab_gd_cond <- tab_gd %>%
+  as.data.frame() %>%
+  group_by(gender) %>%
+  mutate(n_gender = sum(Freq), Prop_donor_group = Freq/n_gender) %>%
+  ungroup()
+
+
+pg <- svychisq(~gender+donor_group, 
+         design = data_design, 
+         statistic = "Chisq")
+pg <- round(pg$p.value, 2)
+
+ggplot(data = tab_gd_cond,
+       mapping = aes(x = gender, y = Prop_donor_group*100, fill = gender)) + 
+  geom_col(position = "dodge") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  #coord_flip() +
+  ylab("% of Donor Group")+
+  xlab("Gender") +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1)) +
+  geom_text(aes(label=paste0(round(Prop_donor_group*100, digits=0), '%')), colour = "#4b5050", vjust = -.1) +
+  ggtitle("Weighted Gender Breakdown by Donor Group")+
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  labs(caption = paste('p = ', pg))
+
+
+```
+
+Again, the gender differences between donor groups are not statistically significant. However, among respondents, women are more likely to be occasional donors. Approximately 18-20% of each gender were regular donors.
+
+The remainder of the analyses uses the unweighted data.
+
+### Familiarity by donor group
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+fam_freq <- clean_data %>%
+  select(donor_group, familiarity) %>%
+  group_by(donor_group) %>%
+  count(familiarity) %>%
+  mutate(perc=100*n/sum(n))
+
+pf <- chisq.test(fam_freq$familiarity, fam_freq$donor_group)
+pf <- round(pf$p.value, 2)
+
+ggplot(fam_freq, aes(fill=donor_group, y=perc, x=reorder(stringr::str_wrap(familiarity, 30), perc))) + 
+    geom_col(position="dodge", stat="identity") +
+    coord_flip()+
+    scale_fill_manual(values = colors_180dc2) +
+    ggtitle("Familiarity with FRC by Donor Group") +
+    ylab("% of Donor Group") +
+    theme_180dc +
+    theme(axis.title.y=element_blank(),
+          axis.title.x=element_blank(),
+          legend.position = "bottom",
+    legend.title = element_blank()) +
+    theme(rect = element_blank()) +
+    geom_text(aes(label=paste0(round(perc, digits=0), ' %')), colour = "#4b5050", position = position_dodge2(width = 1), hjust = -.03)+
+  labs(caption = paste('p = ', pf))
+
+```
+
+### What might motivate each donor group to donate to FRC?
+
+All donor groups listed improved finances as a possible motivation to donate in the future. 
+
+Among regular donors, the other given options were mostly equally frequent. However, more occasional donors wanted more information on how donations are spent (43% compared to 30% of regular donors), and indicated that they would be motivated by an event (29%) or positive media coverage (33%).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+motivation <- clean_data %>%
+  gather("category", "incentive", motivation_finance:motivation_other) %>%
+  filter(!is.na(incentive))
+
+pm <- chisq.test(motivation$incentive, motivation$donor_group)
+pm <- round(pm$p.value, 2)
+
+n_reg <- as.numeric(count(filter(clean_data, donor_group == "Regular Donor")))
+n_occ <- as.numeric(count(filter(clean_data, donor_group == "Occasional Donor")))
+n_non <- as.numeric(count(filter(clean_data, donor_group == "Non-Donor")))
+
+motivation <- motivation %>%
+  group_by(donor_group, incentive) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+motivation %>% ggplot(aes(x=reorder(stringr::str_wrap(incentive, 35), prop), y=prop*100, fill=incentive)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  xlab("Motivation")+
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  ggtitle("Motivation to Donate to FRC \n by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 10) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', pm))
+
+#  graphs using grid.arrange instead of facet_wrap:
+#  mot_reg <- motivation %>% 
+#    filter(donor_group == "Regular Donor") %>%
+#    group_by(incentive) %>%
+#    summarise(Freq=n()) %>%
+#    mutate(Prop = Freq/n_reg) %>%
+#    ungroup()
+#  
+#  mot_occ <- motivation %>% 
+#    filter(donor_group == "Occasional Donor") %>%
+#    group_by(incentive) %>%
+#    summarise(Freq=n()) %>%
+#    mutate(Prop = Freq/n_occ) %>%
+#    ungroup()
+# 
+#  mot_non <- motivation %>% 
+#    filter(donor_group == "Non-Donor") %>%
+#    group_by(incentive) %>%
+#    summarise(Freq=n()) %>%
+#    mutate(Prop = Freq/n_non) %>%
+#    ungroup()
+# 
+#  
+# mot_reg_plot <- mot_reg %>%  ggplot(aes(x=incentive, y=Prop * 100)) +    geom_col(position = "dodge") +
+#    coord_flip() +
+#    geom_text(aes(label=paste0(round(Prop*100, digits=0), '%'))) +
+#    ylab("%")
+#  
+#   
+# mot_occ_plot <- mot_occ %>%  ggplot(aes(x=incentive, y=Prop * 100)) +    geom_col(position = "dodge") +
+#    coord_flip() +
+#    geom_text(aes(label=paste0(round(Prop*100, digits=0), '%'))) +
+#    ylab("%")
+# 
+# mot_non_plot <- mot_non %>%  ggplot(aes(x=incentive, y=Prop * 100)) +    geom_col(position = "dodge") +
+#    coord_flip() +
+#    geom_text(aes(label=paste0(round(Prop*100, digits=0), '%'))) +
+#    ylab("%")
+# 
+#  
+#  grid.arrange(mot_reg_plot, mot_occ_plot, mot_non_plot) 
+
+```
+
+
+
+
+
+### How engaged are regular donors?
+
+Over half of regular donors (and all respondents) either participate in or organize extracurricular activities. However, regular donors are slightly more likely than occasional donors NOT to organize extracurricular activities.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+pi <- chisq.test(clean_data$how_involved, clean_data$donor_group)
+pi <- round(pi$p.value, 2)
+
+involved <- clean_data %>%
+  group_by(donor_group, how_involved) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+involved %>% ggplot(aes(x=stringr::str_wrap(how_involved, 25), y=prop*100, fill=how_involved)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(30, multi_line = TRUE)) +
+  ggtitle("Level of Involvement \n by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", hjust = -.01) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', pi))
+
+```
+
+
+
+
+### What extracuricular activities is each donor group engaged in?
+
+Over 40% of regular donors participate in athletic activities, cutural activities, and student union activities.
+
+We failed to include athletic events in our question about the type of FRC events students would support. However, these results suggest sports might be a good entry point for reaching students. Some respondents even mentioned a marathon or other sports in their comments.
+
+Regular donors appear to be slightly less active than other donor groups. This might be because they work more and have more disposable income.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+activities <- clean_data %>%
+  gather("category", "activity", act_culture:act_other) %>%
+  filter(!is.na(activity))
+
+pa <- chisq.test(activities$activity, activities$donor_group)
+pa <- round(pa$p.value, 2)
+
+activities <- activities %>%
+  group_by(donor_group, activity) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+activities %>% ggplot(aes(x=reorder(stringr::str_wrap(activity, 40), prop), y=prop*100, fill=activity)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  ggtitle("Extracurricular Activities by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 8) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', pa))
+
+
+```
+
+
+
+### What kind of FRC events is each donor group interested in attending?
+
+The most popular type of event by far is lecture series, with 67% of regular donors indicating that they would attend a lecture in support of FRC. Next are concerts/gigs, followed by lunch and learns, meetings with influencial people, and game/trivia nights. A third of regular donors would be interested in a FRC student club.
+
+There's not much difference between the donor groups. However, a few more occasional donors (43% compared to 37% of regular donors) are interested in meeting with an influential person, which suggests this might be a better way to draw in new, one-time donations than a game or trivia night (29% of occasional donors vs 37% of regular donors).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+events <- clean_data %>%
+  gather("category", "event", events_concerts:events_other) %>%
+  filter(!is.na(event))
+
+pe <- chisq.test(events$event, events$donor_group)
+pe <- round(pe$p.value, 2)
+
+events <- events %>%
+  group_by(donor_group, event) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+events %>% ggplot(aes(x=reorder(stringr::str_wrap(event, 40), prop), y=prop*100, fill=event)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(30, multi_line = TRUE)) +
+  ggtitle("FRC Events by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 8) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', pe))
+
+
+```
+
+
+
+### Which universities have a higher rate of regular donors?
+
+It looks like the University of Helsinki might be a good start for reaching out to potential donors, since 37% of respondents from this school are regular donors. Abo Academy and Hanken have the smallest percentage of regular donors (7% and 11% respectively). However, this could be a result of bias in the survey. Because of the channels of distribution, respondents from each of these schools were unlikely to be representative of the broader student body. For example, the survey may have been more likely to reach students from Helsinki University who were already engaged with NGOs.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ps <- chisq.test(clean_data$school, clean_data$donor_group)
+ps <- round(ps$p.value, 3)
+
+schools <- clean_data %>%
+  group_by(donor_group, school) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+schools %>% ggplot(aes(x=reorder(school, prop), y=prop*100, fill=school)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  ggtitle("Schools by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 5) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', ps))
+
+```
+
+
+
+
+
+### What form of publicity does each donor group prefer?
+
+All donor groups seem to pay attention to event publicity from social media, followed distantly by word-of-mouth and email. Regular donors are more likely than occasional donors to pay attention to email and faculty and staff. This might indicate that FRC should try to get these students to sign up for their newsletter or to promote events by reaching out to professors. However, if events are targeting one-time donors, flyers might work, since 48% of occasional donors listed flyers and posters as getting their attention.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+publicity <- clean_data %>%
+  gather("category", "channel", publicity_flyers:publicity_other) %>%
+  filter(!is.na(channel))
+
+pp <- chisq.test(publicity$channel, publicity$donor_group)
+pp <- round(pp$p.value, 2)
+
+publicity <- publicity %>%
+  group_by(donor_group, channel) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+publicity %>% ggplot(aes(x=reorder(stringr::str_wrap(channel, 30), prop), y=prop*100, fill=channel)) +
+  geom_col() +
+  coord_flip() +
+  ylab("% of Donor Group") +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  ggtitle("Publicity Channels by Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", nudge_y = 8) +
+  theme(axis.title.y = element_blank()) +
+  labs(caption = paste('p = ', pp))
+
+```
+
+
+### Are Finns or internationals more likely to be regular donors?
+
+Finnish students are not much more likely than international students to be regular donors. However, international students are much more likely to be non-donors. Again, this might be due to income and employment differences.
+
+
+```{r echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE}
+
+pn <- chisq.test(clean_data$nationality, clean_data$donor_group)
+pn <- round(pn$p.value, 2)
+
+nationalities <- clean_data %>%
+  group_by(donor_group, nationality) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+nationalities %>% ggplot(aes(x=nationality, y=prop*100, fill=nationality)) +
+  geom_col() +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  coord_flip() +
+  ggtitle("Nationalities by Donor Group") +
+  ylab("% of Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", position = position_dodge2(width = 1), hjust = -.05) +
+  labs(caption = paste('p = ', pn))
+
+
+```
+
+
+
+
+### Were regular donors more likely to sign up for the newsletter?
+
+Regular donors were only slightly more likely than occasional donors to sign up for the newsletter, with 28% opting in, compared to 24% of occasional donors. These results are statistically significant at the .05 level. In total, 20% of respondents opted to sign up for the newsletter.
+
+```{r echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE}
+
+pns <- chisq.test(clean_data$nationality, clean_data$donor_group)
+pns <- round(pns$p.value, 2)
+
+newsletter <- clean_data %>%
+  group_by(donor_group, newsletter) %>%
+  summarise(n=n()) %>%
+  mutate(n_dg = case_when(
+             donor_group == "Regular Donor" ~ n_reg,
+             donor_group == "Occasional Donor" ~ n_occ,
+             donor_group == "Non-Donor" ~ n_non
+           ), prop = n/n_dg)
+
+newsletter %>% ggplot(aes(x=newsletter, y=prop*100, fill=newsletter)) +
+  geom_col() +
+  facet_wrap(~ donor_group, labeller = label_wrap_gen(35, multi_line = TRUE)) +
+  coord_flip() +
+  ggtitle("Newsletter Signups by Donor Group") +
+  ylab("% of Donor Group") +
+  theme_180dc +
+  scale_fill_manual(values = colors_180dc2) +
+  theme(legend.position = "none") +
+  geom_text(aes(label=paste0(round(prop*100, digits=0), '%')), colour = "#4b5050", position = position_dodge2(width = 1), hjust = -.05) +
+  labs(caption = paste('p = ', pns))
+
+
+```
+
+## Appendix
+
+### Bias
+
+The survey data is likely heavily biased due to the methods used to find participants. The respondents were NOT randomly sampled, and we distributed the survey through personal connections and student newsletters/magazines. Due to the Covid-19 pandemic, we couldn't find alternative ways to diversify channels (e.g. we couldn't visit campuses). 
+
+Of the 1058 persons that clicked on the survey link, 328 started answering. In total, 233 persons answered the survey, which means that 71 % of the people actually started the survey completed it.
+
+Very few males answered the survey. In addition this was especially prominent among Finnish nationals: only 29 Finnish men answered the survey compared to 134 Finnish women. 
+
+The gender bias is especially notable when interpreting the results based on the different universities. In e.g. Hanken, where some of the team members are enrolled, we received a much smaller gender bias as we had the ability to reach out through a more diverse set of channels. However, in other universities, such as the University of Helsinki, only 4 out of 44 respondents were male, making it difficult to conduct analysis on gender differences.
+
+
+
+
+### Survey Questions
+
+1. Which of the following best describes your attitude towards donating?
+
++ I regularly donate money to one nonprofit organisation.
+ 
++  regularly donate money to several different nonprofit organisations.
+ 
++ I occasionally donate money to different nonprofit organisations.
+ 
++ I don't donate money, but I participate in another way (volunteering, donation of goods, sales etc.).
+ 
++ I don't usually participate in or support nonprofit organisations.
+
+
+
+2. Why do you donate? Rate the importance of the following factors.
+
+(Very important, Somewhat important, Not very important, Not at all important)
+
++ I want to help people in need.
+
++ I want to help a cause which I personally believe in. 
+
++ I know someone who is personally affected by the cause and want to support it.  
+
++ Charitable giving is part of my religious obligations or beliefs. 
+
++ A friend or family member asks me to donate.  
+
++ I donate money in order to attend events.  
+
++ I believe that those with more should help those with less.
+
+
+
+3. Why don't you donate?
+
++ Not interested / Don't want to be involved.
+ 
++ There are no interesting beneficiaries.
+ 
++ I don't trust the fundraising organisations.
+ 
++ There's not enough information on how the donations are used.
+ 
++ My financial situation doesn't allow it.
+ 
++ Other
+
+
+
+4. How familiar are you with the Finnish Refugee Council / Suomen Pakolaisapu / Finlands Flyktinghjälp?
+
++ I’ve never heard of the Finnish Refugee Council.
+ 
++ I’ve heard of the Finnish Refugee Council, but I’m not sure what it does.
+ 
++ I’m familiar with the Finnish Refugee Council and its programs.
+ 
++ I currently volunteer with or donate to the Finnish Refugee Council.
+
+
+
+The Finnish Refugee Council (FRC) is Finland’s largest expert organisation specialising in the issues of displacement and migration. Each year, FRC support thousands of people in Finland and abroad in recovering from conflicts and in integrating into new societies – helping them make what can feel like an end into a new beginning.
+
+5. How favorably or unfavorably would you rate the following activities OUTSIDE of Finland of the Finnish Refugee Council?
+
+(Very favorable, Mostly favorable, Don’t know, Mostly unfavorable, Very unfavorable)
+
++ Adult literacy, local language and everyday coping skills for refugees
+
++ Livelihood, business and financial literacy training
+
++ Gender equality and eradicating gender-based violence 
+
++ Educating refugees on adapting to the effects of climate change
+
+
+
+6. How favorably or unfavorably would you rate the following activities of the Finnish Refugee Council INSIDE Finland?
+
+(Very favorable, Mostly favorable, Don’t know, Mostly unfavorable, Very unfavorable)
+
++ Individual guidance and advice for vulnerable refugees, asylum seekers and immigrants
+
++ Developing and promoting best practices for successful integration of refugees and immigrants 
+
++ Political and social advocacy
+
++ Promoting empathy and positive attitudes towards refugees
+
+
+
+7. Are you involved in any of the following extracurricular activities? (check all that apply)
+
++ Cultural / artistic / literature activities
+ 
++ Athletic activities
+ 
++ Handcraft or technical activities
+ 
++ Student union activities
+ 
++ I’m not usually involved in extracurricular activities
+ 
++ Other
+
+
+
+8. Generally, how involved are you in on-campus activities?
+
++ I do not attend or participate in activities.
+ 
++ I attend events / activities.
+ 
++ I actively participate in or help plan events / activities.
+ 
++ I am not currently as involved as I would like to be.
+
+
+
+9. What form of event publicity primarily gets your attention? (check all that apply)
+
++ Flyers / posters / table tents
+ 
++ TV monitors on campus
+ 
++ Faculty, staff or students promoting events
+ 
++ Facebook / Twitter / Instagram
+ 
++ Email
+ 
++ Student newsletter / magazine
+ 
++ Word of mouth
+ 
++ Other
+
+
+
+10. I would attend/join the following events in support of the Finnish Refugee Council:
+
++ Concerts / gigs
+ 
++ Lecture series or speakers
+ 
++ Contests / giveaways
+ 
++ Meeting with an influential person
+ 
++ Finnish Refugee Council student association
+ 
++ Lunch and learns
+ 
++ Cooking or crafting classes
+ 
++ Game or trivia night
+ 
++ Movie night
+ 
++ Gala dinner
+ 
++ None
+ 
++ Other
+
+
+
+11. What might motivate you to donate to the Finnish Refugee Council in the future?
+
++ If my financial situation improves
+ 
++ If FRC hosts an event that I’m interested in attending
+ 
++ If FRC offers a prize for donating
+ 
++ If FRC provides more information on how donations are spent
+ 
++ If FRC receives positive news or media coverage
+ 
++ If I personally know someone helped by FRC
+ 
++ If I know the person who asks me to donate
+ 
++ If my donation is matched by a foundation or corporation
+ 
++ Nothing
+ 
++ Other
+
+
+
+12. What is your gender?
+
++ Female
+ 
++ Male
+ 
++ Prefer not to say
+ 
++ Other
+
+
+
+13. Which category below includes your age?:
+
++ 17 or younger
+ 
++ 18-20
+ 
++ 21-25
+ 
++ 26-30
+ 
++ 31 or older
+
+
+
+14. Which of the following best describes your employment status?
+
++ Not employed
+ 
++ Employed, working 5 or less hours per week
+ 
++ Employed, working 6-19 hours per week
+ 
++ Employed, working 20 or more hours per week
+
+
+
+15. Was your disposable income (for social and leisure activities) sufficient for your needs during the last semester?
+
++ I had enough money.
+ 
++ I had barely enough money.
+ 
++ I had to reduce my expenses.
+ 
++ Financial matters constantly caused me problems.
+ 
++ Prefer not to answer.
+
+
+
+16. What is your current degree program?
+
++ Bachelor of Science or Arts
+ 
++ Master of Science or Arts
+ 
++ Postgraduate degree
+ 
++ Other
+
+
+
+17. What is your university or institute of higher education?
+
++ Hanken School of Economics
+ 
++ University of Helsinki
+ 
++ Aalto University
+ 
++ Åbo Akademi University
+ 
++ University of Turku
+ 
++ Other
+
+
+
+18. What is your field of study?
+
++ Natural Sciences
+ 
++ Technical Sciences
+ 
++ Business, Economics, Administration
+ 
++ Humanities, Art and Design
+ 
++ Social Sciences
+ 
++ Law
+ 
++ Agriculture, Forestry
+ 
++ Sports Sciences
+ 
++ Other
+
+
+
+19. Are you permanently living in Finland? 
+
++ Yes
+ 
++ No
+
+
+
+20. Where are you from? (Nationality)
+
++ Finland
+ 
++ Other
+
+
+
+21. What is your email address? We do not share your information or data with third parties. We will only use this information to contact you if your name is drawn in the raffle. 
+
+
+
+22. Would you like to sign up for the Finnish Refugee Council newsletter?
+
++ Yes
+ 
++ No
