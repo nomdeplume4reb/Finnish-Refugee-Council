@@ -135,7 +135,7 @@ colors_180dc2 <- c("#4b5050", "#54b441", "#6e7378", "#aaafb4", "#c9ccce", "#55b5
 
 ## Summary
 
-In collaboration with 180 Degrees Consulting Helsinki, I worked with a team of four to come up with a strategy for the Finnish Refugee Council (FRC) for enlarging their student donor base. The first stage of the project entailed writing and conducting a survey of local students on their attitudes towards donating to NGOs and their familiarity and favorability of FRC. The survey was open between 27.03.2020 and 21.04.2020 and was targeted and distributed (nonrandomly) to students of Finnish universities. Respondents were entered into a lottery for a 50 EUR gift card to K-Group supermarkets.
+In collaboration with 180 Degrees Consulting Helsinki, I worked with a team of four to come up with a strategy for the Finnish Refugee Council (FRC) to enlarge their student donor base. The first stage of the project entailed writing and conducting a survey of local students on their attitudes towards donating to NGOs and their familiarity and favorability of FRC. The survey was open between 27.03.2020 and 21.04.2020 and was targeted and distributed (nonrandomly) to students of Finnish universities. Respondents were entered into a lottery for a 50 EUR gift card to K-Group supermarkets.
 
 ### What are the demographics of respondents?
 
@@ -181,7 +181,7 @@ clean_data %>% group_by(age) %>%
 
 ### Institutes of Education
 
-Most repondents were from the University of Helsinki or Hanken School of Economics (21% each). The biggest schools in the "other" category include the University of Eastern Finland and various schools of applied sciences.
+Most repondents are from the University of Helsinki or Hanken School of Economics (21% each). The biggest schools in the "other" category include the University of Eastern Finland and various schools of applied sciences.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -223,7 +223,7 @@ ggplot(school, aes(x=reorder(school, Prop), y=Prop * 100, fill=school)) +
 
 ### Degree Programs and Field of Study
 
-Most respondents were graduate students (53%) or undergraduate students (39%). The most popular fields of study were Business, Economics and Administration (30%), followed by Social Sciences (23%) and Humanities, Art and Design (21%).
+Most respondents are graduate students (53%) or undergraduate students (39%). The most popular fields of study are Business, Economics and Administration (30%), followed by Social Sciences (23%) and Humanities, Art and Design (21%).
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -263,7 +263,7 @@ clean_data %>% group_by(study_field) %>%
 
 ### Employment and income
 
-Most of the respondents were not employed (55%) and few work full-time hours. A large share of students still think they have enough disposable income, although some students expressed that they were financially constrained.
+Most of the respondents are not employed (55%) and few work full-time hours (15%). A large share of students still think they have enough disposable income, although some students expressed that they were financially constrained.
 
 
 ```{r echo=FALSE, fig.hold='hold', message=FALSE, warning=FALSE, out.width="50%"}
@@ -306,7 +306,7 @@ clean_data %>% group_by(income) %>%
 ### Nationality
 
 
-Three quarters of respondents were Finnish nationals. The second largest group was Vietnamese, making up 5% of respondents. Approximately 91% of respondents permanently live in Finland.
+Three quarters of respondents are Finnish nationals. The second largest group is Vietnamese, making up 5% of respondents. Approximately 91% of respondents permanently live in Finland.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.hold='hold', out.width="50%"}
@@ -379,7 +379,7 @@ clean_data %>% group_by(behavior) %>%
 
 ### Why do students donate money?
 
-Of those respondents who regularly or occasionally donate money, most listed belief in the cause as well as helping those in need (or "with less") as a very important reason for donating. Least important seems to be access to events and religion.
+Of those respondents who regularly or occasionally donate money, most list belief in the cause as well as helping those in need (or "with less") as a very important reason for donating. Least important seems to be access to events and religion.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -420,7 +420,7 @@ why_donate %>% group_by(reason, importance) %>%
 
 ### Why don't students donate money?
 
-Most non-donors list financial constraints as their primary reason for not donating. However, a couple students mentioned in the comments that they do not donate because they volunteer, suggesting that some students may view volunteering as a substitute for financial contributions.
+Most non-donors list financial constraints as their primary reason for not donating. However, a couple students mention in the comments that they do not donate because they volunteer, suggesting that some students may view volunteering as a substitute for financial contributions.
 
 The second most common reason for not donating is a lack of trust of the fundraising organization (15%).
 
@@ -528,7 +528,7 @@ fav_activities_in_avg <- fav_activities_in %>%
 
 ```
 
-Respondents generally see FRC activities as mostly or very favorable. Very few rated any activity as mostly or very unfavorable. We found no evidence for students preferring the activities inside or outside of Finland. That is the average favorability of the activities inside and outside of Finland were about the same. Overall students thought gender equality and literacy were the most favorable activities outside of Finland. For the activities inside of Finland a few more people were unsure about how favorable political and social advocacy is compared to other activities. 
+Respondents generally see FRC activities as mostly or very favorable. Very few rated any activity as mostly or very unfavorable. We found no evidence for students preferring the activities inside or outside of Finland. That is, the average favorability of the activities inside and outside of Finland were about the same. Overall, students thought gender equality and literacy were the most favorable activities outside of Finland. For the activities inside of Finland, a few more people were unsure about favorability of political and social advocacy compared to other activities. 
 
 
 
@@ -592,7 +592,7 @@ ggplot(fav_activities_in, aes(x=favorability, fill=favorability, y=perc)) +
 
 ### Gender and favorability of FRC activities
 
-Male respondents seem to be somewhat more sceptical towards FRC activities. The gender difference was especially large when it comes to political and social advocacy. 68 % of women found social and political advocacy very or mostly favorable, compared to 50 % of men.
+Male respondents are more likely to rate FRC activities as less favorable. The gender difference largest for political and social advocacy. 68 % of women find social and political advocacy very or mostly favorable, compared to 50 % of men.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 #Favorability by gender - Outside
@@ -680,7 +680,7 @@ clean_data <- clean_data %>%
 
 
 ### Weighting results by gender
-Since most of the survey respondents are women we attempt to weight the results by gender, assuming 53% of students in Finland are female and 47% are male (Official Statistics of Finland).
+Since most of the survey respondents are women, we attempt to weight the results by gender, assuming 53% of students in Finland are female and 47% are male (Official Statistics of Finland).
 
 Official Statistics of Finland. (n.d.). Number of students registered at university in Finland in 2019, by university. In Statista - The Statistics Portal. Retrieved May 1, 2020, from https://www.statista.com/statistics/525786/finland-number-of-university-students-by-university/.
 
@@ -774,9 +774,9 @@ ggplot(fam_freq, aes(fill=donor_group, y=perc, x=reorder(stringr::str_wrap(famil
 
 ### What might motivate each donor group to donate to FRC?
 
-All donor groups listed improved finances as a possible motivation to donate in the future. 
+All donor groups list improved finances as a possible motivation to donate in the future. 
 
-Among regular donors, the other given options were mostly equally frequent. However, more occasional donors wanted more information on how donations are spent (43% compared to 30% of regular donors), and indicated that they would be motivated by an event (29%) or positive media coverage (33%).
+Among regular donors, the other given options are mostly equally frequent. However, more occasional donors want more information on how donations are spent (43% compared to 30% of regular donors), and indicate that they would be motivated by an event (29%) or positive media coverage (33%).
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -902,7 +902,7 @@ involved %>% ggplot(aes(x=stringr::str_wrap(how_involved, 25), y=prop*100, fill=
 
 Over 40% of regular donors participate in athletic activities, cutural activities, and student union activities.
 
-We failed to include athletic events in our question about the type of FRC events students would support. However, these results suggest sports might be a good entry point for reaching students. Some respondents even mentioned a marathon or other sports in their comments.
+We failed to include athletic events in our question about the type of FRC events students would support. However, these results suggest sports might be a good entry point for reaching students. Some respondents even suggested a marathon or other sports in their comments.
 
 Regular donors appear to be slightly less active than other donor groups. This might be because they work more and have more disposable income.
 
@@ -944,7 +944,7 @@ activities %>% ggplot(aes(x=reorder(stringr::str_wrap(activity, 40), prop), y=pr
 
 ### What kind of FRC events is each donor group interested in attending?
 
-The most popular type of event by far is lecture series, with 67% of regular donors indicating that they would attend a lecture in support of FRC. Next are concerts/gigs, followed by lunch and learns, meetings with influencial people, and game/trivia nights. A third of regular donors would be interested in a FRC student club.
+The most popular type of event by far is lecture series, with 67% of regular donors indicating that they would attend a lecture in support of FRC. Next are concerts/gigs, followed by lunch-and-learns, meetings with influencial people, and game/trivia nights. A third of regular donors would be interested in a FRC student club.
 
 There's not much difference between the donor groups. However, a few more occasional donors (43% compared to 37% of regular donors) are interested in meeting with an influential person, which suggests this might be a better way to draw in new, one-time donations than a game or trivia night (29% of occasional donors vs 37% of regular donors).
 
@@ -986,7 +986,7 @@ events %>% ggplot(aes(x=reorder(stringr::str_wrap(event, 40), prop), y=prop*100,
 
 ### Which universities have a higher rate of regular donors?
 
-It looks like the University of Helsinki might be a good start for reaching out to potential donors, since 37% of respondents from this school are regular donors. Abo Academy and Hanken have the smallest percentage of regular donors (7% and 11% respectively). However, this could be a result of bias in the survey. Because of the channels of distribution, respondents from each of these schools were unlikely to be representative of the broader student body. For example, the survey may have been more likely to reach students from Helsinki University who were already engaged with NGOs.
+It looks like the University of Helsinki might be a good start for reaching out to potential donors, since 37% of respondents from this school are regular donors. Abo Academy and Hanken have the smallest percentage of regular donors (7% and 11% respectively). However, this very likely a result of bias in the survey. Because of the channels of distribution, respondents from each of these schools were unlikely to be representative of the broader student body. For example, the survey may have been more likely to reach students from Helsinki University who were already engaged with NGOs.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -1024,7 +1024,7 @@ schools %>% ggplot(aes(x=reorder(school, prop), y=prop*100, fill=school)) +
 
 ### What form of publicity does each donor group prefer?
 
-All donor groups seem to pay attention to event publicity from social media, followed distantly by word-of-mouth and email. Regular donors are more likely than occasional donors to pay attention to email and faculty and staff. This might indicate that FRC should try to get these students to sign up for their newsletter or to promote events by reaching out to professors. However, if events are targeting one-time donors, flyers might work, since 48% of occasional donors listed flyers and posters as getting their attention.
+All donor groups seem to pay attention to event publicity from social media, followed distantly by word-of-mouth and email. Regular donors are more likely than occasional donors to pay attention to email and faculty and staff. This might indicate that FRC should try to get these students to sign up for their newsletter or to promote events by reaching out to professors. However, if events are targeting one-time donors, flyers might work, since 48% of occasional donors list flyers and posters as getting their attention.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -1062,7 +1062,7 @@ publicity %>% ggplot(aes(x=reorder(stringr::str_wrap(channel, 30), prop), y=prop
 
 ### Are Finns or internationals more likely to be regular donors?
 
-Finnish students are not much more likely than international students to be regular donors. However, international students are much more likely to be non-donors. Again, this might be due to income and employment differences.
+Finnish students are not much more likely than international students to be regular donors. However, international students are much more likely to be non-donors. Again, this might be due to income and employment differences, or the result of the unrepresentativeness of respondent groups.
 
 
 ```{r echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE}
@@ -1099,7 +1099,7 @@ nationalities %>% ggplot(aes(x=nationality, y=prop*100, fill=nationality)) +
 
 ### Were regular donors more likely to sign up for the newsletter?
 
-Regular donors were only slightly more likely than occasional donors to sign up for the newsletter, with 28% opting in, compared to 24% of occasional donors. These results are statistically significant at the .05 level. In total, 20% of respondents opted to sign up for the newsletter.
+Regular donors are only slightly more likely than occasional donors to sign up for the newsletter, with 28% opting in, compared to 24% of occasional donors. These results are statistically significant at the .05 level. In total, 20% of respondents opted to sign up for the newsletter.
 
 ```{r echo=FALSE, fig.height=4, fig.width=4, message=FALSE, warning=FALSE}
 
@@ -1138,9 +1138,9 @@ The survey data is likely heavily biased due to the methods used to find partici
 
 Of the 1058 persons that clicked on the survey link, 328 started answering. In total, 233 persons answered the survey, which means that 71 % of the people actually started the survey completed it.
 
-Very few males answered the survey. In addition this was especially prominent among Finnish nationals: only 29 Finnish men answered the survey compared to 134 Finnish women. 
+Very few males answered the survey. This was especially prominent among Finnish nationals: only 29 Finnish men answered the survey compared to 134 Finnish women. 
 
-The gender bias is especially notable when interpreting the results based on the different universities. In e.g. Hanken, where some of the team members are enrolled, we received a much smaller gender bias as we had the ability to reach out through a more diverse set of channels. However, in other universities, such as the University of Helsinki, only 4 out of 44 respondents were male, making it difficult to conduct analysis on gender differences.
+The gender bias is especially notable when interpreting the results based on the different universities. In e.g. Hanken, where some of the team members are enrolled, we received a much smaller gender bias, as we had the ability to reach out through a more diverse set of channels. However, in other universities, such as the University of Helsinki, only 4 out of 44 respondents were male, making it difficult to conduct analysis on gender differences.
 
 
 
